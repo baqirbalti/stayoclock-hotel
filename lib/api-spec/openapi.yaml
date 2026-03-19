@@ -1,15 +1,20 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Hotel Booking System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: rooms
+    description: Room operations
+  - name: bookings
+    description: Booking operations
+  - name: ai
+    description: AI agent operations
 paths:
   /healthz:
     get:
@@ -24,6 +29,121 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /rooms:
+    get:
+      operationId: listRooms
+      tags: [rooms]
+      summary: List all rooms
+      responses:
+        "200":
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Room"
+    post:
+      operationId: createRoom
+      tags: [rooms]
+      summary: Create a room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoomInput"
+      responses:
+        "201":
+          description: Room created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+
+  /rooms/{id}:
+    get:
+      operationId: getRoom
+      tags: [rooms]
+      summary: Get a room by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Room details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+        "404":
+          description: Room not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List all bookings
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingInput"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [ai]
+      summary: Chat with the AI hotel agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiChatInput"
+      responses:
+        "200":
+          description: AI agent response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiChatResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +154,162 @@ components:
       required:
         - status
 
+    Room:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [standard, deluxe, suite, penthouse]
+        pricePerNight:
+          type: number
+        capacity:
+          type: integer
+        amenities:
+          type: array
+          items:
+            type: string
+        available:
+          type: boolean
+        description:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - name
+        - type
+        - pricePerNight
+        - capacity
+        - amenities
+        - available
+        - description
+        - createdAt
+        - updatedAt
+
+    CreateRoomInput:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [standard, deluxe, suite, penthouse]
+        pricePerNight:
+          type: number
+        capacity:
+          type: integer
+        amenities:
+          type: array
+          items:
+            type: string
+        description:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+      required:
+        - name
+        - type
+        - pricePerNight
+        - capacity
+        - description
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+        roomId:
+          type: integer
+        guestName:
+          type: string
+        guestEmail:
+          type: string
+        checkIn:
+          type: string
+        checkOut:
+          type: string
+        totalPrice:
+          type: number
+        status:
+          type: string
+          enum: [confirmed, cancelled, pending]
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        room:
+          $ref: "#/components/schemas/Room"
+          nullable: true
+      required:
+        - id
+        - roomId
+        - guestName
+        - guestEmail
+        - checkIn
+        - checkOut
+        - totalPrice
+        - status
+        - createdAt
+        - updatedAt
+
+    CreateBookingInput:
+      type: object
+      properties:
+        roomId:
+          type: integer
+        guestName:
+          type: string
+        guestEmail:
+          type: string
+        checkIn:
+          type: string
+        checkOut:
+          type: string
+      required:
+        - roomId
+        - guestName
+        - guestEmail
+        - checkIn
+        - checkOut
+
+    AiChatInput:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    AiChatResponse:
+      type: object
+      properties:
+        response:
+          type: string
+        tool:
+          type: string
+          nullable: true
+        data:
+          nullable: true
+      required:
+        - response
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message

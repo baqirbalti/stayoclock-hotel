@@ -1,0 +1,108 @@
+Build a minimal but production-structured AI-powered hotel booking system with 3 parts:
+
+1) Frontend (Next.js App Router + Tailwind)
+2) Backend (FastAPI)
+3) AI Agent Service (Python + LangChain, simple version)
+
+Keep everything simple, clean, and runnable.
+
+-----------------------------------
+MONOREPO STRUCTURE
+-----------------------------------
+hotel-system/
+  frontend/
+  backend/
+  ai-service/
+
+-----------------------------------
+BACKEND (FastAPI)
+-----------------------------------
+Structure:
+app/
+  main.py
+  core/
+  db/
+  models/
+  schemas/
+  routers/
+  services/
+
+Use SQLite.
+
+Tables:
+- hotels
+- rooms
+- bookings
+
+Fields:
+- id
+- hotel_id
+- created_at
+- updated_at
+
+Features:
+- GET /rooms → list rooms
+- POST /rooms → create room
+- POST /bookings → create booking
+- GET /bookings → list bookings
+
+Use:
+- SQLAlchemy
+- Pydantic
+
+-----------------------------------
+FRONTEND (Next.js)
+-----------------------------------
+Pages:
+- Home
+- Rooms
+- Booking
+
+Components:
+- Navbar
+- RoomCard
+- BookingForm
+
+Features:
+- Fetch rooms from backend
+- Display room list
+- Submit booking form
+
+Keep UI simple using Tailwind.
+
+-----------------------------------
+AI AGENT (LangChain - SIMPLE)
+-----------------------------------
+Structure:
+- main.py
+- tools/
+
+Tools:
+- check_room_availability
+- get_room_details
+
+Behavior:
+- Accept user query
+- Decide which tool to call
+- Return response
+
+Use mock data (no DB integration needed yet).
+
+-----------------------------------
+INTEGRATION
+-----------------------------------
+- Frontend calls backend via REST API
+- AI agent runs as separate service
+- Keep ports simple (e.g., 8000, 3000)
+
+-----------------------------------
+GOAL
+-----------------------------------
+The system should:
+- Show rooms on frontend
+- Allow booking submission
+- Store bookings in backend
+- AI agent answers basic queries
+
+Keep everything minimal, modular, and runnable.
+Do NOT overcomplicate.

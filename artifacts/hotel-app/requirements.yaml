@@ -1,0 +1,17 @@
+packages:
+  "framer-motion": "For fluid page transitions, scrolling animations, and chat widget interactions"
+  "date-fns": "For formatting check-in/check-out dates and calculating total booking prices"
+  "react-hook-form": "For robust state management of the booking form"
+  "@hookform/resolvers": "For validating booking forms using Zod schemas"
+
+images:
+  - path: "artifacts/hotel-app/public/images/logo.png"
+    description: "Elegant luxury hotel logo mark, minimal geometric monogram in deep navy blue on a transparent background"
+    aspect_ratio: "1:1"
+  - path: "artifacts/hotel-app/public/images/hero-pattern.png"
+    description: "Subtle, elegant seamless background pattern with thin gold geometric art deco lines on a soft cream background"
+    aspect_ratio: "16:9"
+
+notes:
+  - Assumes standard API integration with @workspace/api-client-react hooks
+  - Relies on Unsplash URLs for rich room imagery since the mock API may return empty image URLs
