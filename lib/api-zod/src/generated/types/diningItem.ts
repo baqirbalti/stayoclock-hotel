@@ -5,20 +5,17 @@
  * Hotel Booking System API
  * OpenAPI spec version: 0.1.0
  */
-import type { RoomImage } from "./roomImage";
-import type { RoomType } from "./roomType";
+import type { DiningItemCategory } from "./diningItemCategory";
 
-export interface Room {
+export interface DiningItem {
   id: number;
   name: string;
-  type: RoomType;
-  pricePerNight: number;
-  capacity: number;
-  amenities: string[];
-  available: boolean;
   description: string;
+  category: DiningItemCategory;
+  price: number;
   imageUrl?: string | null;
-  images: RoomImage[];
+  available: boolean;
+  displayOrder: number;
   createdAt: string;
   updatedAt: string;
 }

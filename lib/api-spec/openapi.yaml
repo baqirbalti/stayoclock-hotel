@@ -11,17 +11,26 @@ tags:
     description: Health operations
   - name: rooms
     description: Room operations
+  - name: roomImages
+    description: Room image operations
   - name: bookings
     description: Booking operations
+  - name: dining
+    description: Dining operations
+  - name: settings
+    description: Hotel settings
+  - name: admin
+    description: Admin operations
   - name: ai
     description: AI agent operations
+  - name: storage
+    description: Object storage operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -46,8 +55,8 @@ paths:
                   $ref: "#/components/schemas/Room"
     post:
       operationId: createRoom
-      tags: [rooms]
-      summary: Create a room
+      tags: [admin]
+      summary: Create a room (admin)
       requestBody:
         required: true
         content:
@@ -81,11 +90,119 @@ paths:
               schema:
                 $ref: "#/components/schemas/Room"
         "404":
-          description: Room not found
+          description: Not found
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateRoom
+      tags: [admin]
+      summary: Update a room (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoomInput"
+      responses:
+        "200":
+          description: Room updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Room"
+    delete:
+      operationId: deleteRoom
+      tags: [admin]
+      summary: Delete a room (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /rooms/{id}/images:
+    get:
+      operationId: listRoomImages
+      tags: [roomImages]
+      summary: List images for a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Room images
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoomImage"
+    post:
+      operationId: addRoomImage
+      tags: [roomImages]
+      summary: Add an image to a room
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddRoomImageInput"
+      responses:
+        "201":
+          description: Image added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomImage"
+
+  /rooms/{id}/images/{imageId}:
+    delete:
+      operationId: deleteRoomImage
+      tags: [roomImages]
+      summary: Delete a room image
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
 
   /bookings:
     get:
@@ -119,17 +236,140 @@ paths:
               schema:
                 $ref: "#/components/schemas/Booking"
         "400":
-          description: Validation error
+          description: Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /bookings/{id}:
+    delete:
+      operationId: cancelBooking
+      tags: [bookings]
+      summary: Cancel a booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /dining:
+    get:
+      operationId: listDining
+      tags: [dining]
+      summary: List all dining items
+      responses:
+        "200":
+          description: Dining items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiningItem"
+    post:
+      operationId: createDiningItem
+      tags: [admin]
+      summary: Create a dining item (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDiningItemInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiningItem"
+
+  /dining/{id}:
+    put:
+      operationId: updateDiningItem
+      tags: [admin]
+      summary: Update a dining item (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDiningItemInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiningItem"
+    delete:
+      operationId: deleteDiningItem
+      tags: [admin]
+      summary: Delete a dining item (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get hotel settings (social media, contact info)
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HotelSettings"
+    put:
+      operationId: updateSettings
+      tags: [admin]
+      summary: Update hotel settings (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HotelSettings"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HotelSettings"
+
   /ai/chat:
     post:
       operationId: aiChat
       tags: [ai]
-      summary: Chat with the AI hotel agent
+      summary: Chat with AI hotel agent
       requestBody:
         required: true
         content:
@@ -138,11 +378,30 @@ paths:
               $ref: "#/components/schemas/AiChatInput"
       responses:
         "200":
-          description: AI agent response
+          description: AI response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/AiChatResponse"
+
+  /storage/uploads/request-url:
+    post:
+      operationId: requestUploadUrl
+      tags: [storage]
+      summary: Request a presigned upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestUploadUrlBody"
+      responses:
+        "200":
+          description: Presigned URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestUploadUrlResponse"
 
 components:
   schemas:
@@ -151,8 +410,55 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success]
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required: [error, message]
+
+    RoomImage:
+      type: object
+      properties:
+        id:
+          type: integer
+        roomId:
+          type: integer
+        imageUrl:
+          type: string
+        altText:
+          type: string
+          nullable: true
+        displayOrder:
+          type: integer
+        createdAt:
+          type: string
+      required: [id, roomId, imageUrl, displayOrder, createdAt]
+
+    AddRoomImageInput:
+      type: object
+      properties:
+        imageUrl:
+          type: string
+        altText:
+          type: string
+          nullable: true
+        displayOrder:
+          type: integer
+      required: [imageUrl]
 
     Room:
       type: object
@@ -179,21 +485,15 @@ components:
         imageUrl:
           type: string
           nullable: true
+        images:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoomImage"
         createdAt:
           type: string
         updatedAt:
           type: string
-      required:
-        - id
-        - name
-        - type
-        - pricePerNight
-        - capacity
-        - amenities
-        - available
-        - description
-        - createdAt
-        - updatedAt
+      required: [id, name, type, pricePerNight, capacity, amenities, available, description, images, createdAt, updatedAt]
 
     CreateRoomInput:
       type: object
@@ -211,17 +511,14 @@ components:
           type: array
           items:
             type: string
+        available:
+          type: boolean
         description:
           type: string
         imageUrl:
           type: string
           nullable: true
-      required:
-        - name
-        - type
-        - pricePerNight
-        - capacity
-        - description
+      required: [name, type, pricePerNight, capacity, description]
 
     Booking:
       type: object
@@ -250,17 +547,7 @@ components:
         room:
           $ref: "#/components/schemas/Room"
           nullable: true
-      required:
-        - id
-        - roomId
-        - guestName
-        - guestEmail
-        - checkIn
-        - checkOut
-        - totalPrice
-        - status
-        - createdAt
-        - updatedAt
+      required: [id, roomId, guestName, guestEmail, checkIn, checkOut, totalPrice, status, createdAt, updatedAt]
 
     CreateBookingInput:
       type: object
@@ -275,20 +562,81 @@ components:
           type: string
         checkOut:
           type: string
-      required:
-        - roomId
-        - guestName
-        - guestEmail
-        - checkIn
-        - checkOut
+      required: [roomId, guestName, guestEmail, checkIn, checkOut]
+
+    DiningItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [breakfast, lunch, dinner, drinks, dessert]
+        price:
+          type: number
+        imageUrl:
+          type: string
+          nullable: true
+        available:
+          type: boolean
+        displayOrder:
+          type: integer
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required: [id, name, description, category, price, available, displayOrder, createdAt, updatedAt]
+
+    CreateDiningItemInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [breakfast, lunch, dinner, drinks, dessert]
+        price:
+          type: number
+        imageUrl:
+          type: string
+          nullable: true
+        available:
+          type: boolean
+        displayOrder:
+          type: integer
+      required: [name, description, category, price]
+
+    HotelSettings:
+      type: object
+      properties:
+        facebookUrl:
+          type: string
+        twitterUrl:
+          type: string
+        instagramUrl:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        hotelName:
+          type: string
+      required: []
 
     AiChatInput:
       type: object
       properties:
         message:
           type: string
-      required:
-        - message
+      required: [message]
 
     AiChatResponse:
       type: object
@@ -300,16 +648,24 @@ components:
           nullable: true
         data:
           nullable: true
-      required:
-        - response
+      required: [response]
 
-    ErrorResponse:
+    RequestUploadUrlBody:
       type: object
       properties:
-        error:
+        name:
           type: string
-        message:
+        size:
+          type: integer
+        contentType:
           type: string
-      required:
-        - error
-        - message
+      required: [name, size, contentType]
+
+    RequestUploadUrlResponse:
+      type: object
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+      required: [uploadURL, objectPath]

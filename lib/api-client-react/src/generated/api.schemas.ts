@@ -9,6 +9,31 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface SuccessResponse {
+  success: boolean;
+  message?: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+  message: string;
+}
+
+export interface RoomImage {
+  id: number;
+  roomId: number;
+  imageUrl: string;
+  altText?: string | null;
+  displayOrder: number;
+  createdAt: string;
+}
+
+export interface AddRoomImageInput {
+  imageUrl: string;
+  altText?: string | null;
+  displayOrder?: number;
+}
+
 export type RoomType = (typeof RoomType)[keyof typeof RoomType];
 
 export const RoomType = {
@@ -28,6 +53,7 @@ export interface Room {
   available: boolean;
   description: string;
   imageUrl?: string | null;
+  images: RoomImage[];
   createdAt: string;
   updatedAt: string;
 }
@@ -48,6 +74,7 @@ export interface CreateRoomInput {
   pricePerNight: number;
   capacity: number;
   amenities?: string[];
+  available?: boolean;
   description: string;
   imageUrl?: string | null;
 }
@@ -82,6 +109,61 @@ export interface CreateBookingInput {
   checkOut: string;
 }
 
+export type DiningItemCategory =
+  (typeof DiningItemCategory)[keyof typeof DiningItemCategory];
+
+export const DiningItemCategory = {
+  breakfast: "breakfast",
+  lunch: "lunch",
+  dinner: "dinner",
+  drinks: "drinks",
+  dessert: "dessert",
+} as const;
+
+export interface DiningItem {
+  id: number;
+  name: string;
+  description: string;
+  category: DiningItemCategory;
+  price: number;
+  imageUrl?: string | null;
+  available: boolean;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreateDiningItemInputCategory =
+  (typeof CreateDiningItemInputCategory)[keyof typeof CreateDiningItemInputCategory];
+
+export const CreateDiningItemInputCategory = {
+  breakfast: "breakfast",
+  lunch: "lunch",
+  dinner: "dinner",
+  drinks: "drinks",
+  dessert: "dessert",
+} as const;
+
+export interface CreateDiningItemInput {
+  name: string;
+  description: string;
+  category: CreateDiningItemInputCategory;
+  price: number;
+  imageUrl?: string | null;
+  available?: boolean;
+  displayOrder?: number;
+}
+
+export interface HotelSettings {
+  facebookUrl?: string;
+  twitterUrl?: string;
+  instagramUrl?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  hotelName?: string;
+}
+
 export interface AiChatInput {
   message: string;
 }
@@ -92,7 +174,13 @@ export interface AiChatResponse {
   data?: unknown | null;
 }
 
-export interface ErrorResponse {
-  error: string;
-  message: string;
+export interface RequestUploadUrlBody {
+  name: string;
+  size: number;
+  contentType: string;
+}
+
+export interface RequestUploadUrlResponse {
+  uploadURL: string;
+  objectPath: string;
 }

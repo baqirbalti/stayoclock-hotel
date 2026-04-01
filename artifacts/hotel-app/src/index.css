@@ -82,4 +82,12 @@
   .luxury-gradient {
     @apply bg-gradient-to-r from-primary to-primary/80;
   }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }

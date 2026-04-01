@@ -6,14 +6,24 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./addRoomImageInput";
 export * from "./aiChatInput";
 export * from "./aiChatResponse";
 export * from "./booking";
 export * from "./bookingStatus";
 export * from "./createBookingInput";
+export * from "./createDiningItemInput";
+export * from "./createDiningItemInputCategory";
 export * from "./createRoomInput";
 export * from "./createRoomInputType";
+export * from "./diningItem";
+export * from "./diningItemCategory";
 export * from "./errorResponse";
 export * from "./healthStatus";
+export * from "./hotelSettings";
+export * from "./requestUploadUrlBody";
+export * from "./requestUploadUrlResponse";
 export * from "./room";
+export * from "./roomImage";
 export * from "./roomType";
+export * from "./successResponse";

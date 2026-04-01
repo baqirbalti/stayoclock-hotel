@@ -13,6 +13,7 @@ export interface CreateRoomInput {
   pricePerNight: number;
   capacity: number;
   amenities?: string[];
+  available?: boolean;
   description: string;
   imageUrl?: string | null;
 }

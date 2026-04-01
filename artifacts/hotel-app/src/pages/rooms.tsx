@@ -2,8 +2,91 @@ import { Link } from "wouter";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useListRooms } from "@workspace/api-client-react";
 import { getRoomImage } from "@/lib/unsplash";
-import { Users, Wifi, Wind, Tv } from "lucide-react";
-import { motion } from "framer-motion";
+import { Users, Wifi, Tv, ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import type { Room } from "@workspace/api-client-react";
+
+const formatImageUrl = (url?: string | null) => {
+  if (!url) return "";
+  if (url.startsWith("/objects/")) return `/api/storage${url}`;
+  return url;
+};
+
+function RoomCarousel({ room }: { room: Room }) {
+  const images = room.images && room.images.length > 0 
+    ? room.images.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)).map(img => formatImageUrl(img.imageUrl))
+    : [getRoomImage(room.id, room.imageUrl)];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextImage = (e: React.MouseEvent) => {
+    e.preventDefault(); // prevent link click if wrapped
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  return (
+    <div className="relative h-72 overflow-hidden bg-muted group/carousel">
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={currentIndex}
+          src={images[currentIndex]}
+          alt={`${room.name} image ${currentIndex + 1}`}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </AnimatePresence>
+
+      {!room.available && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm z-10">
+          <span className="bg-white px-6 py-2 rounded-full font-bold text-foreground tracking-wide">Fully Booked</span>
+        </div>
+      )}
+
+      {/* Image Counter Badge */}
+      {images.length > 1 && (
+        <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 z-20">
+          <ImageIcon size={14} />
+          {currentIndex + 1} / {images.length}
+        </div>
+      )}
+
+      {/* Navigation Arrows */}
+      {images.length > 1 && (
+        <>
+          <button 
+            onClick={prevImage}
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover/carousel:opacity-100 transition-all z-20"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button 
+            onClick={nextImage}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center backdrop-blur-md opacity-0 group-hover/carousel:opacity-100 transition-all z-20"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </>
+      )}
+
+      <div className="absolute bottom-4 left-4 flex flex-wrap gap-2 z-20 pointer-events-none">
+        {room.amenities?.slice(0,3).map(amenity => (
+          <span key={amenity} className="text-xs bg-black/60 text-white backdrop-blur-md px-2.5 py-1 rounded-md">
+            {amenity}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Rooms() {
   const { data: rooms, isLoading } = useListRooms();
@@ -13,6 +96,7 @@ export default function Rooms() {
       {/* Page Header */}
       <div className="bg-foreground text-white py-24 relative overflow-hidden mt-16">
         <div className="absolute inset-0 opacity-20">
+          {/* rooms hero scenic luxury hotel room interior */}
           <img 
             src="https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&q=80&w=1920" 
             alt="Texture" 
@@ -48,25 +132,7 @@ export default function Rooms() {
                   transition={{ delay: (i % 3) * 0.1, duration: 0.5 }}
                   className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col group"
                 >
-                  <div className="relative h-72 overflow-hidden">
-                    <img 
-                      src={getRoomImage(room.id, room.imageUrl)} 
-                      alt={room.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    {!room.available && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm z-10">
-                        <span className="bg-white px-6 py-2 rounded-full font-bold text-foreground tracking-wide">Fully Booked</span>
-                      </div>
-                    )}
-                    <div className="absolute bottom-4 left-4 flex flex-wrap gap-2 z-20">
-                      {room.amenities?.slice(0,3).map(amenity => (
-                        <span key={amenity} className="text-xs bg-black/60 text-white backdrop-blur-md px-2.5 py-1 rounded-md">
-                          {amenity}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                  <RoomCarousel room={room} />
                   
                   <div className="p-6 flex-1 flex flex-col">
                     <div className="flex justify-between items-start mb-4">

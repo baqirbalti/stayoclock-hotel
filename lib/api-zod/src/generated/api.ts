@@ -8,7 +8,6 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -28,13 +27,23 @@ export const ListRoomsResponseItem = zod.object({
   available: zod.boolean(),
   description: zod.string(),
   imageUrl: zod.string().nullish(),
+  images: zod.array(
+    zod.object({
+      id: zod.number(),
+      roomId: zod.number(),
+      imageUrl: zod.string(),
+      altText: zod.string().nullish(),
+      displayOrder: zod.number(),
+      createdAt: zod.string(),
+    }),
+  ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
 });
 export const ListRoomsResponse = zod.array(ListRoomsResponseItem);
 
 /**
- * @summary Create a room
+ * @summary Create a room (admin)
  */
 export const CreateRoomBody = zod.object({
   name: zod.string(),
@@ -42,6 +51,7 @@ export const CreateRoomBody = zod.object({
   pricePerNight: zod.number(),
   capacity: zod.number(),
   amenities: zod.array(zod.string()).optional(),
+  available: zod.boolean().optional(),
   description: zod.string(),
   imageUrl: zod.string().nullish(),
 });
@@ -63,8 +73,115 @@ export const GetRoomResponse = zod.object({
   available: zod.boolean(),
   description: zod.string(),
   imageUrl: zod.string().nullish(),
+  images: zod.array(
+    zod.object({
+      id: zod.number(),
+      roomId: zod.number(),
+      imageUrl: zod.string(),
+      altText: zod.string().nullish(),
+      displayOrder: zod.number(),
+      createdAt: zod.string(),
+    }),
+  ),
   createdAt: zod.string(),
   updatedAt: zod.string(),
+});
+
+/**
+ * @summary Update a room (admin)
+ */
+export const UpdateRoomParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateRoomBody = zod.object({
+  name: zod.string(),
+  type: zod.enum(["standard", "deluxe", "suite", "penthouse"]),
+  pricePerNight: zod.number(),
+  capacity: zod.number(),
+  amenities: zod.array(zod.string()).optional(),
+  available: zod.boolean().optional(),
+  description: zod.string(),
+  imageUrl: zod.string().nullish(),
+});
+
+export const UpdateRoomResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  type: zod.enum(["standard", "deluxe", "suite", "penthouse"]),
+  pricePerNight: zod.number(),
+  capacity: zod.number(),
+  amenities: zod.array(zod.string()),
+  available: zod.boolean(),
+  description: zod.string(),
+  imageUrl: zod.string().nullish(),
+  images: zod.array(
+    zod.object({
+      id: zod.number(),
+      roomId: zod.number(),
+      imageUrl: zod.string(),
+      altText: zod.string().nullish(),
+      displayOrder: zod.number(),
+      createdAt: zod.string(),
+    }),
+  ),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete a room (admin)
+ */
+export const DeleteRoomParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteRoomResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string().optional(),
+});
+
+/**
+ * @summary List images for a room
+ */
+export const ListRoomImagesParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const ListRoomImagesResponseItem = zod.object({
+  id: zod.number(),
+  roomId: zod.number(),
+  imageUrl: zod.string(),
+  altText: zod.string().nullish(),
+  displayOrder: zod.number(),
+  createdAt: zod.string(),
+});
+export const ListRoomImagesResponse = zod.array(ListRoomImagesResponseItem);
+
+/**
+ * @summary Add an image to a room
+ */
+export const AddRoomImageParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const AddRoomImageBody = zod.object({
+  imageUrl: zod.string(),
+  altText: zod.string().nullish(),
+  displayOrder: zod.number().optional(),
+});
+
+/**
+ * @summary Delete a room image
+ */
+export const DeleteRoomImageParams = zod.object({
+  id: zod.coerce.number(),
+  imageId: zod.coerce.number(),
+});
+
+export const DeleteRoomImageResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string().optional(),
 });
 
 /**
@@ -92,6 +209,16 @@ export const ListBookingsResponseItem = zod.object({
       available: zod.boolean(),
       description: zod.string(),
       imageUrl: zod.string().nullish(),
+      images: zod.array(
+        zod.object({
+          id: zod.number(),
+          roomId: zod.number(),
+          imageUrl: zod.string(),
+          altText: zod.string().nullish(),
+          displayOrder: zod.number(),
+          createdAt: zod.string(),
+        }),
+      ),
       createdAt: zod.string(),
       updatedAt: zod.string(),
     })
@@ -111,7 +238,160 @@ export const CreateBookingBody = zod.object({
 });
 
 /**
- * @summary Chat with the AI hotel agent
+ * @summary Cancel a booking
+ */
+export const CancelBookingParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const CancelBookingResponse = zod.object({
+  id: zod.number(),
+  roomId: zod.number(),
+  guestName: zod.string(),
+  guestEmail: zod.string(),
+  checkIn: zod.string(),
+  checkOut: zod.string(),
+  totalPrice: zod.number(),
+  status: zod.enum(["confirmed", "cancelled", "pending"]),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+  room: zod
+    .object({
+      id: zod.number(),
+      name: zod.string(),
+      type: zod.enum(["standard", "deluxe", "suite", "penthouse"]),
+      pricePerNight: zod.number(),
+      capacity: zod.number(),
+      amenities: zod.array(zod.string()),
+      available: zod.boolean(),
+      description: zod.string(),
+      imageUrl: zod.string().nullish(),
+      images: zod.array(
+        zod.object({
+          id: zod.number(),
+          roomId: zod.number(),
+          imageUrl: zod.string(),
+          altText: zod.string().nullish(),
+          displayOrder: zod.number(),
+          createdAt: zod.string(),
+        }),
+      ),
+      createdAt: zod.string(),
+      updatedAt: zod.string(),
+    })
+    .nullish(),
+});
+
+/**
+ * @summary List all dining items
+ */
+export const ListDiningResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  description: zod.string(),
+  category: zod.enum(["breakfast", "lunch", "dinner", "drinks", "dessert"]),
+  price: zod.number(),
+  imageUrl: zod.string().nullish(),
+  available: zod.boolean(),
+  displayOrder: zod.number(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+export const ListDiningResponse = zod.array(ListDiningResponseItem);
+
+/**
+ * @summary Create a dining item (admin)
+ */
+export const CreateDiningItemBody = zod.object({
+  name: zod.string(),
+  description: zod.string(),
+  category: zod.enum(["breakfast", "lunch", "dinner", "drinks", "dessert"]),
+  price: zod.number(),
+  imageUrl: zod.string().nullish(),
+  available: zod.boolean().optional(),
+  displayOrder: zod.number().optional(),
+});
+
+/**
+ * @summary Update a dining item (admin)
+ */
+export const UpdateDiningItemParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const UpdateDiningItemBody = zod.object({
+  name: zod.string(),
+  description: zod.string(),
+  category: zod.enum(["breakfast", "lunch", "dinner", "drinks", "dessert"]),
+  price: zod.number(),
+  imageUrl: zod.string().nullish(),
+  available: zod.boolean().optional(),
+  displayOrder: zod.number().optional(),
+});
+
+export const UpdateDiningItemResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  description: zod.string(),
+  category: zod.enum(["breakfast", "lunch", "dinner", "drinks", "dessert"]),
+  price: zod.number(),
+  imageUrl: zod.string().nullish(),
+  available: zod.boolean(),
+  displayOrder: zod.number(),
+  createdAt: zod.string(),
+  updatedAt: zod.string(),
+});
+
+/**
+ * @summary Delete a dining item (admin)
+ */
+export const DeleteDiningItemParams = zod.object({
+  id: zod.coerce.number(),
+});
+
+export const DeleteDiningItemResponse = zod.object({
+  success: zod.boolean(),
+  message: zod.string().optional(),
+});
+
+/**
+ * @summary Get hotel settings (social media, contact info)
+ */
+export const GetSettingsResponse = zod.object({
+  facebookUrl: zod.string().optional(),
+  twitterUrl: zod.string().optional(),
+  instagramUrl: zod.string().optional(),
+  phone: zod.string().optional(),
+  email: zod.string().optional(),
+  address: zod.string().optional(),
+  hotelName: zod.string().optional(),
+});
+
+/**
+ * @summary Update hotel settings (admin)
+ */
+export const UpdateSettingsBody = zod.object({
+  facebookUrl: zod.string().optional(),
+  twitterUrl: zod.string().optional(),
+  instagramUrl: zod.string().optional(),
+  phone: zod.string().optional(),
+  email: zod.string().optional(),
+  address: zod.string().optional(),
+  hotelName: zod.string().optional(),
+});
+
+export const UpdateSettingsResponse = zod.object({
+  facebookUrl: zod.string().optional(),
+  twitterUrl: zod.string().optional(),
+  instagramUrl: zod.string().optional(),
+  phone: zod.string().optional(),
+  email: zod.string().optional(),
+  address: zod.string().optional(),
+  hotelName: zod.string().optional(),
+});
+
+/**
+ * @summary Chat with AI hotel agent
  */
 export const AiChatBody = zod.object({
   message: zod.string(),
@@ -121,4 +401,18 @@ export const AiChatResponse = zod.object({
   response: zod.string(),
   tool: zod.string().nullish(),
   data: zod.unknown().nullish(),
+});
+
+/**
+ * @summary Request a presigned upload URL
+ */
+export const RequestUploadUrlBody = zod.object({
+  name: zod.string(),
+  size: zod.number(),
+  contentType: zod.string(),
+});
+
+export const RequestUploadUrlResponse = zod.object({
+  uploadURL: zod.string(),
+  objectPath: zod.string(),
 });

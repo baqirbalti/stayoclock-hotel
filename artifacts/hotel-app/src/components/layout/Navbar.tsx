@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Menu, X, BedDouble } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,6 +19,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/rooms", label: "Accommodations" },
+    { href: "/dining", label: "Dining" },
     { href: "/bookings", label: "My Bookings" },
   ];
 

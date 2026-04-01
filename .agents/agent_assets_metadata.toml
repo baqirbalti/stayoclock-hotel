@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "1Jidpi58j0X2W4WgaHbso"
+uri = "file://artifacts/hotel-app/public/images/dining-hero.png"
+type = "image"
+title = "dining-hero.png"

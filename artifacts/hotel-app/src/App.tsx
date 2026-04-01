@@ -7,6 +7,11 @@ import Home from "./pages/home";
 import Rooms from "./pages/rooms";
 import Book from "./pages/book";
 import Bookings from "./pages/bookings";
+import Dining from "./pages/dining";
+import Admin from "./pages/admin";
+import Privacy from "./pages/privacy";
+import Terms from "./pages/terms";
+import Cancellation from "./pages/cancellation";
 import NotFound from "./pages/not-found";
 
 const queryClient = new QueryClient({
@@ -25,6 +30,11 @@ function Router() {
       <Route path="/rooms" component={Rooms} />
       <Route path="/book/:roomId" component={Book} />
       <Route path="/bookings" component={Bookings} />
+      <Route path="/dining" component={Dining} />
+      <Route path="/admin" component={Admin} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/cancellation" component={Cancellation} />
       <Route component={NotFound} />
     </Switch>
   );
